@@ -1,0 +1,395 @@
+body {
+  background: #121212;
+  color: #e0e0e0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+/* Header Styles */
+header {
+  padding: 20px 0;
+  position: relative;
+}
+
+/* Header before login */
+#headerBeforeLogin .site-title {
+  margin-top: 40px;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+/* Login Button (Top Left) */
+.top-left {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+.login-btn {
+  width: 120px;
+  background: #2979ff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #5393ff;
+}
+
+/* Logged-In Navigation Bar */
+#loggedInNav {
+  background: #1f1f1f;
+  padding: 10px 0;
+}
+
+#loggedInNav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+}
+
+#loggedInNav ul li a,
+#loggedInNav ul li button {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#loggedInNav ul li a:hover,
+#loggedInNav ul li button:hover {
+  background: #2979ff;
+}
+
+/* Container for the form */
+.form-container {
+  max-width: 600px;
+  margin: 80px auto 20px;
+  background: #1e1e1e;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* Quiz Boxes */
+.quiz-box {
+  background: #2c2c2c;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Input and Select Fields */
+select, input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background: #333;
+  color: #e0e0e0;
+  transition: border 0.3s ease;
+}
+
+select:focus, input:focus {
+  outline: none;
+  border-color: #2979ff;
+}
+
+/* Button Styles */
+.button-main {
+  background: #2979ff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.button-main:hover {
+  background: #5393ff;
+}
+
+/* Difficulty Info */
+#difficulty-info {
+  font-size: 0.9em;
+  color: #b0bec5;
+  margin-top: 5px;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background-color: #1e1e1e;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #444;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 10px;
+  color: #e0e0e0;
+  text-align: center;
+  position: relative;
+
+  /* Center all inner elements */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Google Sign-In Centering */
+#g_id_signin {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Email/Password Inputs & Button */
+.modal-content input {
+  width: 90%;
+  max-width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background: #333;
+  color: #e0e0e0;
+  text-align: center;
+}
+
+.modal-content .info {
+  font-size: 0.8rem;
+  color: #b0bec5;
+  margin-bottom: 10px;
+}
+
+.modal-content button {
+  width: 90%;
+  max-width: 300px;
+  text-align: center;
+}
+
+/* Modal close button */
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.quiz-question {
+  background: #2c2c2c;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.option-btn.selected {
+  background-color: #d3d3d3 !important;
+  color: #000 !important;
+  font-weight: bold;
+}
+
+#generateBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner-wrapper {
+  justify-content: center;
+  align-items:center;
+  margin-top: 10px;
+  display: none;
+}
+
+.spinner-wrapper.show {
+  display: flex !important;
+}
+
+.status-message {
+  color: #4caf50;
+  font-size: 1rem;
+  margin-top: 15px;
+  display: none;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+.status-message.fade-out {
+  opacity: 0;
+}
+
+.disclaimer {
+  font-size: 0.85rem;
+  color: #b0bec5;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.quiz-box label {
+  display: block;
+  text-align: left;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.quiz-box input[type="number"] {
+  margin-bottom: 10px;
+}
+
+#questionTypeWarning {
+  font-size: 0.9rem;
+}
+
+.score-text {
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+#unitInput {
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+button.option-btn {
+  transition: all 0.3s ease;
+}
+
+button.option-btn:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.question-tip {
+  color: #b0e0ff;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: center;
+  font-style: italic;
+}
+
+#quizContainer {
+  margin-top: 20px;
+}
+
+#statusMessage {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #4caf50;
+  text-align: center;
+  margin-top: 15px;
+  display: none;
+}
+
+.quiz-box .dropdown-toggle {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  background: #424242;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+
+.quiz-box .dropdown-menu {
+  font-size: 0.9rem;
+  min-width: 140px;
+  text-align: left;
+}
+
+/* Notes styling */
+.quiz-box textarea {
+  background: #2c2c2c;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 8px;
+  width: 100%;
+  color: #e0e0e0;
+  resize: vertical;
+  min-height: 60px;
+  font-size: 0.9rem;
+}
+
+/* Sort select styling */
+#sortSelect {
+  background: #1e1e1e;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 10px 0 0 auto;
+  display: block;
+  font-size: 0.9rem;
+  width: fit-content;
+}
+
+/* Quiz grid dropdown alignment */
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Better textarea visibility */
+textarea.notes-area {
+  width: 100%;
+  background: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #666;
+  border-radius: 5px;
+  padding: 10px;
+  min-height: 60px;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+textarea.notes-area::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Allow JS to control visibility dynamically */
+#savedQuizzesHeader,
+#quizOutputWrapper {
+  display: none;
+}
