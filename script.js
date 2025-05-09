@@ -10,22 +10,27 @@ function isValidPassword(password) {
 
 let quizMode = "instant";
 let latestQuizData = [];
-// set up the quiz questions
+
 function setupUI() {
   setTimeout(() => {
+    const savedHeader = document.getElementById("savedQuizzesHeader");
+    const formContainer = document.querySelector(".form-container");
+    const quizWrapper = document.getElementById("quizOutputWrapper");
+    const contactSection = document.getElementById("contactSection");
+    const quizContainer = document.getElementById("quizContainer");
+
     if (localStorage.getItem("userEmail")) {
       document.getElementById("headerBeforeLogin").style.display = "none";
       document.getElementById("loggedInNav").style.display = "block";
     }
-    // what mode is currently slected
+
     const modeSelect = document.getElementById("modeSelect");
     if (modeSelect) {
       modeSelect.addEventListener("change", (e) => {
         quizMode = e.target.value;
       });
     }
-    // generate button with the get const variables for each questions and a total so
-    // the number of questions given == the total number of questions for mc, ts, and ms
+
     const generateBtn = document.getElementById("generateBtn");
     if (generateBtn) {
       generateBtn.addEventListener("click", async () => {
@@ -39,13 +44,10 @@ function setupUI() {
         const warning = document.getElementById("questionTypeWarning");
         const statusMsg = document.getElementById("statusMessage");
         const spinner = document.querySelector(".spinner-wrapper");
-        
-        // check to see if all the questions have been answerd excpet the optional 
-        // specific unit or topic.
+
         if (!subject || isNaN(total) || !grade || !difficulty) {
           return alert("Fill all fields.");
         }
-        // check to see if the question == to the total questions selected. 
         if ((mc + tf + ms) !== total) {
           warning.style.display = "block";
           return;
@@ -54,7 +56,7 @@ function setupUI() {
         warning.style.display = "none";
         spinner.classList.add("show");
         statusMsg.style.display = "none";
-        // use try to and catch why the quiz is not being generated. 
+
         try {
           const data = await sendPromptToChatGPT(subject, total, grade, difficulty, mc, tf, ms);
           const valid = Array.isArray(data) && data.length > 0 && data.every(q => q.question && q.options && q.answer);
@@ -89,7 +91,7 @@ function setupUI() {
         document.getElementById("loginModal").style.display = "none";
       }
     });
-    // email registeration and logic
+
     document.getElementById("loginSubmit")?.addEventListener("click", () => {
       const email = document.getElementById("emailInput").value.trim();
       const password = document.getElementById("passwordInput").value.trim();
@@ -100,46 +102,69 @@ function setupUI() {
       document.getElementById("headerBeforeLogin").style.display = "none";
       document.getElementById("loggedInNav").style.display = "block";
     });
-    // sign out if you are logged in
+
     document.getElementById("signOutBtn")?.addEventListener("click", () => {
       localStorage.removeItem("userEmail");
       location.reload();
     });
-    // create an easy login button for me to login in quickly and test. 
+
     document.getElementById("devLoginBtn")?.addEventListener("click", () => {
       localStorage.setItem("userEmail", "dev@local.test");
       document.getElementById("loginModal").style.display = "none";
       document.getElementById("headerBeforeLogin").style.display = "none";
       document.getElementById("loggedInNav").style.display = "block";
     });
-    // get the real google client id and copy and paste it into the if, i think it gets blocked because of 
-    // codehs's own google login in. 
+
     if (window.google && google.accounts && google.accounts.id) {
       google.accounts.id.initialize({
         client_id: "YOUR_GOOGLE_CLIENT_ID_HERE",
         callback: handleCredentialResponse,
       });
-      // sign in button
       google.accounts.id.renderButton(
         document.getElementById("g_id_signin"),
         { theme: "outline", size: "large" }
       );
     }
-    // flexbale window and nav bar. 
+
+    // Quizzes tab
     document.getElementById("quizzesNav")?.addEventListener("click", (e) => {
       e.preventDefault();
-      document.querySelector(".form-container").style.display = "none";
-      document.getElementById("quizOutputWrapper").style.display = "block";
-      document.getElementById("savedQuizzesHeader").style.display = "flex";
-      renderQuiz([], true);
+      formContainer.style.display = "none";
+      quizWrapper.style.display = "block";
+      contactSection.style.display = "none";
+      savedHeader.style.display = "flex";
+      savedHeader.style.visibility = "visible";
+
+      quizContainer.innerHTML = "";
+      const email = localStorage.getItem("userEmail");
+      const quizzes = JSON.parse(localStorage.getItem(`quizzes-${email}`) || "[]");
+
+      if (quizzes.length === 0) {
+        quizContainer.innerHTML = "<p class='text-center text-light'>No quizzes saved yet.</p>";
+      } else {
+        renderQuiz([], true);
+      }
     });
 
+    // Generate tab
     document.getElementById("generateNav")?.addEventListener("click", (e) => {
       e.preventDefault();
-      document.querySelector(".form-container").style.display = "block";
-      document.getElementById("quizOutputWrapper").style.display = "block";
-      document.getElementById("savedQuizzesHeader").style.display = "none";
-      document.getElementById("quizContainer").innerHTML = "";
+      formContainer.style.display = "block";
+      quizWrapper.style.display = "none";
+      quizContainer.innerHTML = "";
+      savedHeader.style.display = "none";
+      savedHeader.style.visibility = "hidden";
+      contactSection.style.display = "none";
+    });
+
+    // Contact tab
+    document.getElementById("contactNav")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      formContainer.style.display = "none";
+      quizWrapper.style.display = "none";
+      savedHeader.style.display = "none";
+      savedHeader.style.visibility = "hidden";
+      contactSection.style.display = "block";
     });
 
     document.getElementById("sortSelect")?.addEventListener("change", () => {
@@ -147,7 +172,10 @@ function setupUI() {
     });
   }, 0);
 }
-// setup a loding icon so the user can see the quiz is being generated. 
+
+
+
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", setupUI);
 } else {
@@ -163,8 +191,6 @@ window.handleCredentialResponse = function (response) {
   document.getElementById("loggedInNav").style.display = "block";
 };
 
-// save quiz button, check to see if user is already logged in if not then
-// allow the save quiz to happen if not then ask the user to log in first
 function saveQuizForUser() {
   const email = localStorage.getItem("userEmail");
   if (!email || !latestQuizData || latestQuizData.length === 0) {
@@ -175,11 +201,93 @@ function saveQuizForUser() {
   localStorage.setItem(`quizzes-${email}`, JSON.stringify(existing));
   alert("Quiz saved to your account!");
 }
+
 // next thing that needs to be done the exporting of both answer key and the skeloten quiz for teachers to print out
 //--------------------------------------------------------------------------------------------
 function exportQuizAsPDF(mode) {
-  alert(`PDF export (${mode}) coming soon!`);
+  if (!latestQuizData || latestQuizData.length === 0) {
+    alert("No quiz data to export.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y = 20;
+
+  if (mode === 'student') {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Student Quiz", 105, y, { align: "center" });
+    y += 10;
+
+    // Check if any question is multiple-select (answer is an array)
+    const hasMultiSelect = latestQuizData.some(q => Array.isArray(q.answer));
+
+    // Instructions
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Instructions:", 10, y);
+    y += 7;
+    doc.text("• Circle one option for each question.", 10, y);
+    y += 7;
+    if (hasMultiSelect) {
+      doc.text("• For questions that say 'Select all that apply', you may select more than one.", 10, y);
+      y += 7;
+    }
+    y += 5;
+
+    // Render quiz questions
+    latestQuizData.forEach((q, i) => {
+      const qNum = i + 1;
+      const question = `${qNum}. ${q.question}`;
+      const options = q.options.map((opt, idx) => `${String.fromCharCode(65 + idx)}. ${opt}`);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text(question, 10, y);
+      y += 8;
+
+      options.forEach(opt => {
+        doc.text(opt, 15, y);
+        y += 8;
+      });
+
+      y += 4;
+
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    doc.save("Student_Quiz.pdf");
+
+  } else if (mode === 'answer') {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Answer Key", 105, y, { align: "center" });
+    y += 15;
+
+    latestQuizData.forEach((q, i) => {
+      const correctLetters = Array.isArray(q.answer)
+        ? q.answer.map(a => q.options.indexOf(a)).map(idx => String.fromCharCode(65 + idx)).join(", ")
+        : String.fromCharCode(65 + q.options.indexOf(q.answer));
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text(`${i + 1}. ${correctLetters}`, 10, y);
+      y += 8;
+
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    doc.save("Answer_Key.pdf");
+  }
 }
+
 
 //-------------------------------------------------------------------------------------------------
 
@@ -201,7 +309,7 @@ function renderQuiz(quizData, showSaved = false) {
   if (showSaved) {
     if (formContainer) formContainer.style.display = "none";
     if (wrapper) wrapper.style.display = "block";
-    if (savedHeader) savedHeader.style.display = "flex";
+    if (savedHeader) savedHeader.style.display = "none";
     
     // allow sort by A-Z and Z-A. and show the date the quiz was saved. for now using localstorage
     // in the future I will change it so use firebase so user can access the saved quizzes from any browser 
@@ -214,25 +322,26 @@ function renderQuiz(quizData, showSaved = false) {
       if (sortType === "za") return nameB.localeCompare(nameA);
       return new Date(b.date) - new Date(a.date);
     });
-    // show if the user has any quizzes saved or not. 
+    // If no quizzes are saved, show a message and stop
     if (quizzes.length === 0) {
       container.innerHTML = "<p class='text-center'>No quizzes saved yet.</p>";
       return;
     }
-    
+    // Create a grid layout for showing the quiz cards
     const grid = document.createElement("div");
     grid.style.display = "grid";
     grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
     grid.style.gap = "20px";
     grid.style.marginTop = "20px";
-
+    
+    // Loop through each saved quiz and create a card for it
     quizzes.forEach((quiz, index) => {
       const card = document.createElement("div");
       card.className = "quiz-box";
 
       const header = document.createElement("div");
       header.className = "quiz-header";
-
+      // Allow user to edit the quiz name
       const title = document.createElement("input");
       title.type = "text";
       title.value = quiz.name || `Quiz ${index + 1}`;
@@ -245,10 +354,10 @@ function renderQuiz(quizData, showSaved = false) {
         quizzes[index] = quiz;
         localStorage.setItem(`quizzes-${email}`, JSON.stringify(quizzes));
       });
-
+       // Create the dropdown menu for load, edit notes, and delete
       const dropdown = document.createElement("div");
       dropdown.className = "dropdown";
-
+    
       const toggleBtn = document.createElement("button");
       toggleBtn.className = "btn btn-sm btn-light dropdown-toggle";
       toggleBtn.setAttribute("data-bs-toggle", "dropdown");
@@ -283,7 +392,7 @@ function renderQuiz(quizData, showSaved = false) {
           renderQuiz([], true);
         }
       });
-
+      // Add dropdown menu items to menu and dropdown to header
       menu.appendChild(load);
       menu.appendChild(scrollToNote);
       menu.appendChild(del);
@@ -293,13 +402,13 @@ function renderQuiz(quizData, showSaved = false) {
       header.appendChild(title);
       header.appendChild(dropdown);
       card.appendChild(header);
-
+          // Show when the quiz was saved
       const meta = document.createElement("p");
       meta.style.fontSize = "0.9rem";
       meta.style.color = "#bbb";
       meta.textContent = `Saved: ${new Date(quiz.date).toLocaleString()}`;
       card.appendChild(meta);
-
+         // Notes section (user can write their own notes)
       const note = document.createElement("textarea");
       note.className = "notes-area";
       note.placeholder = "Add optional notes...";
@@ -318,7 +427,7 @@ function renderQuiz(quizData, showSaved = false) {
     return;
   }
 
-  //SHOW GENERATED QUIZ please work 
+  // If not showing saved quizzes, then show a new quiz that was just generated
   if (formContainer) formContainer.style.display = "block";
   if (wrapper) wrapper.style.display = "block";
   if (container) container.style.display = "block";
@@ -326,9 +435,9 @@ function renderQuiz(quizData, showSaved = false) {
 
   container.innerHTML = "";
   const userAnswers = [];
-
+  // Go through each quiz question
   quizData.forEach((q, index) => {
-    const isMulti = Array.isArray(q.answer);
+    const isMulti = Array.isArray(q.answer); // check if multiple answers (multi-select)
     const correctAnswers = new Set((isMulti ? q.answer : [q.answer]).map(ans => normalize(ans)));
     const selected = new Set();
 
@@ -353,7 +462,7 @@ function renderQuiz(quizData, showSaved = false) {
       btn.textContent = option;
       btn.className = "option-btn button-main m-1";
       const optionKey = normalize(option);
-
+      // For instant answer mode: show feedback immediately
       if (quizMode === "instant") {
         if (isMulti) {
           btn.addEventListener("click", () => {
@@ -385,6 +494,7 @@ function renderQuiz(quizData, showSaved = false) {
           });
         }
       } else {
+          // For test mode: user selects options but no feedback until submit
         btn.addEventListener("click", () => {
           if (btn.disabled) return;
           if (isMulti) {
@@ -414,7 +524,7 @@ function renderQuiz(quizData, showSaved = false) {
     });
 
     userAnswers.push({ question: q, selected, questionEl });
-
+    // For multi-select instant mode: add submit button for each question
     if (quizMode === "instant" && isMulti) {
       const submit = document.createElement("button");
       submit.textContent = "Submit Answer";
@@ -453,10 +563,10 @@ function renderQuiz(quizData, showSaved = false) {
 
     container.appendChild(questionEl);
   });
-
+  // Create score summary section
   const summary = document.createElement("div");
   summary.className = "d-flex justify-content-center align-items-center mt-4 gap-3 flex-wrap";
-
+  // Show "Finish & Show Score" for instant mode
   if (quizMode === "instant") {
     const scoreBtn = document.createElement("button");
     scoreBtn.textContent = "Finish & Show Score";
@@ -476,6 +586,7 @@ function renderQuiz(quizData, showSaved = false) {
     summary.appendChild(scoreDisplay);
   }
 
+  // For test mode, user submits all at once and sees final score
   if (quizMode === "test") {
     const submitAll = document.createElement("button");
     submitAll.textContent = "Submit All Answers";
@@ -527,7 +638,7 @@ function renderQuiz(quizData, showSaved = false) {
   }
 
   container.appendChild(summary);
-
+  // Show extra tools like Download Quiz, Download Answer Key, Save Quiz
   const tools = document.createElement("div");
   tools.className = "d-flex justify-content-center flex-wrap mt-3 gap-2";
   // show buttons like save quiz, down answer key, and download teacher quiz answers. 
