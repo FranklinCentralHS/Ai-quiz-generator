@@ -1,4 +1,5 @@
-const apiKey = "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";
+
+const apiKey = "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";
 
 async function sendPromptToChatGPT(subject, questionsInput, grade, difficulty, mc, tf, ms) {
   const unit = document.getElementById("unitInput").value.trim();
@@ -99,4 +100,3 @@ Return ONLY valid JSON. No commentary or explanation.
     return latestQuizData || [];
   }
 }
-
