@@ -389,7 +389,7 @@ textarea.notes-area::placeholder {
 }
 
 /* Allow JS to control visibility dynamically */
-#savedQuizzesHeader,
-#quizOutputWrapper {
+#savedQuizzesHeader {
   display: none;
+  visibility: hidden;
 }
